@@ -9,9 +9,10 @@ use crate::{
         ERROR_NO_MODULE, FAIL_WRONG_MESSAGE, FAIL_WRONG_MODULE,
     },
     persistent_check, time_fn,
+    token_client::{build_and_submit_transaction, TransactionOptions},
     utils::{
         check_balance, create_and_fund_account, emit_step_metrics, get_client, get_faucet_client,
-        NetworkName, TestFailure, TestName,
+        NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
     },
 };
 use anyhow::{anyhow, Result};
@@ -20,11 +21,7 @@ use aptos_cached_packages::aptos_stdlib::EntryFunctionCall;
 use aptos_framework::{BuildOptions, BuiltPackage};
 use aptos_logger::info;
 use aptos_rest_client::Client;
-use aptos_sdk::{
-    bcs,
-    token_client::{build_and_submit_transaction, TransactionOptions},
-    types::LocalAccount,
-};
+use aptos_sdk::{bcs, types::LocalAccount};
 use aptos_types::{
     account_address::AccountAddress,
     transaction::{EntryFunction, TransactionPayload},
@@ -32,8 +29,16 @@ use aptos_types::{
 use move_core_types::{ident_str, language_storage::ModuleId};
 use std::{collections::BTreeMap, path::PathBuf};
 
+// variables
 static MODULE_NAME: &str = "message";
 static MESSAGE: &str = "test message";
+
+// step names
+const BUILD_MODULE: &str = "BUILD_MODULE";
+const PUBLISH_MODULE: &str = "PUBLISH_MODULE";
+const CHECK_MODULE_DATA: &str = "CHECK_MODULE_DATA";
+const SET_MESSAGE: &str = "SET_MESSAGE";
+const CHECK_MESSAGE: &str = "CHECK_MESSAGE";
 
 /// Tests nft transfer. Checks that:
 ///   - can publish module
@@ -45,7 +50,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     let (client, mut account) = emit_step_metrics(
         time_fn!(setup, network_name),
         TestName::PublishModule,
-        "setup",
+        SETUP,
         network_name,
         run_id,
     )?;
@@ -54,13 +59,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address,
-            "check_account_data",
+            CHECK_ACCOUNT_DATA,
             check_account_data,
             &client,
             account.address()
         ),
         TestName::PublishModule,
-        "check_account_data",
+        CHECK_ACCOUNT_DATA,
         network_name,
         run_id,
     )?;
@@ -69,7 +74,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     let package = emit_step_metrics(
         time_fn!(build_module, account.address()),
         TestName::PublishModule,
-        "build_module",
+        BUILD_MODULE,
         network_name,
         run_id,
     )?;
@@ -78,7 +83,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     let blob = emit_step_metrics(
         time_fn!(publish_module, &client, &mut account, package),
         TestName::PublishModule,
-        "publish_module",
+        PUBLISH_MODULE,
         network_name,
         run_id,
     )?;
@@ -87,14 +92,14 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address_bytes,
-            "check_module_data",
+            CHECK_MODULE_DATA,
             check_module_data,
             &client,
             account.address(),
             &blob
         ),
         TestName::PublishModule,
-        "check_module_data",
+        CHECK_MODULE_DATA,
         network_name,
         run_id,
     )?;
@@ -103,7 +108,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(set_message, &client, &mut account),
         TestName::PublishModule,
-        "set_message",
+        SET_MESSAGE,
         network_name,
         run_id,
     )?;
@@ -112,13 +117,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address,
-            "check_message",
+            CHECK_MESSAGE,
             check_message,
             &client,
             account.address()
         ),
         TestName::PublishModule,
-        "check_message",
+        CHECK_MESSAGE,
         network_name,
         run_id,
     )?;

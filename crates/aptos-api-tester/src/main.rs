@@ -8,6 +8,7 @@ mod counters;
 mod fail_message;
 mod persistent_check;
 mod tests;
+mod token_client;
 mod utils;
 #[macro_use]
 mod macros;

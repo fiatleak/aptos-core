@@ -22,6 +22,7 @@ pub const FUND_AMOUNT: u64 = 100_000_000;
 
 // persistency check constants
 
+// How long a persistent check runs for.
 pub static PERSISTENCY_TIMEOUT: Lazy<Duration> = Lazy::new(|| {
     env::var("PERSISTENCY_TIMEOUT")
         .ok()
@@ -30,6 +31,7 @@ pub static PERSISTENCY_TIMEOUT: Lazy<Duration> = Lazy::new(|| {
         .unwrap_or(Duration::from_secs(30))
 });
 
+// Wait time between tries during a persistent check.
 pub static SLEEP_PER_CYCLE: Lazy<Duration> = Lazy::new(|| {
     env::var("SLEEP_PER_CYCLE")
         .ok()

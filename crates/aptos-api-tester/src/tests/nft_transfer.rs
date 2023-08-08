@@ -9,27 +9,36 @@ use crate::{
         FAIL_WRONG_TOKEN_DATA,
     },
     persistent_check, time_fn,
+    token_client::{
+        CollectionData, CollectionMutabilityConfig, RoyaltyOptions, TokenClient, TokenData,
+        TokenMutabilityConfig,
+    },
     utils::{
         check_balance, create_and_fund_account, emit_step_metrics, get_client, get_faucet_client,
-        NetworkName, TestFailure, TestName,
+        NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
     },
 };
 use aptos_api_types::U64;
 use aptos_logger::info;
 use aptos_rest_client::Client;
-use aptos_sdk::{
-    token_client::{
-        CollectionData, CollectionMutabilityConfig, RoyaltyOptions, TokenClient, TokenData,
-        TokenMutabilityConfig,
-    },
-    types::LocalAccount,
-};
+use aptos_sdk::types::LocalAccount;
 use aptos_types::account_address::AccountAddress;
 
-static COLLECTION_NAME: &str = "test collection";
-static TOKEN_NAME: &str = "test token";
-static TOKEN_SUPPLY: u64 = 10;
-static OFFER_AMOUNT: u64 = 2;
+// variables
+const COLLECTION_NAME: &str = "test collection";
+const TOKEN_NAME: &str = "test token";
+const TOKEN_SUPPLY: u64 = 10;
+const OFFER_AMOUNT: u64 = 2;
+
+// step names
+const CREATE_COLLECTION: &str = "CREATE_COLLECTION";
+const CHECK_COLLECTION_METADATA: &str = "CHECK_COLLECTION_METADATA";
+const CREATE_TOKEN: &str = "CREATE_TOKEN";
+const CHECK_TOKEN_METADATA: &str = "CHECK_TOKEN_METADATA";
+const CHECK_SENDER_BALANCE: &str = "CHECK_SENDER_BALANCE";
+const OFFER_TOKEN: &str = "OFFER_TOKEN";
+const CLAIM_TOKEN: &str = "CLAIM_TOKEN";
+const CHECK_RECEIVER_BALANCE: &str = "CHECK_RECEIVER_BALANCE";
 
 /// Tests nft transfer. Checks that:
 ///   - collection data exists
@@ -40,7 +49,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     let (client, mut account, mut receiver) = emit_step_metrics(
         time_fn!(setup, network_name),
         TestName::NftTransfer,
-        "setup",
+        SETUP,
         network_name,
         run_id,
     )?;
@@ -50,14 +59,14 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address_address,
-            "check_account_data",
+            CHECK_ACCOUNT_DATA,
             check_account_data,
             &client,
             account.address(),
             receiver.address()
         ),
         TestName::NftTransfer,
-        "check_account_data",
+        CHECK_ACCOUNT_DATA,
         network_name,
         run_id,
     )?;
@@ -66,7 +75,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(create_collection, &client, &token_client, &mut account),
         TestName::NftTransfer,
-        "create_collection",
+        CREATE_COLLECTION,
         network_name,
         run_id,
     )?;
@@ -75,13 +84,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::token_address,
-            "check_collection_metadata",
+            CHECK_COLLECTION_METADATA,
             check_collection_metadata,
             &token_client,
             account.address()
         ),
         TestName::NftTransfer,
-        "check_collection_metadata",
+        CHECK_COLLECTION_METADATA,
         network_name,
         run_id,
     )?;
@@ -90,7 +99,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(create_token, &client, &token_client, &mut account),
         TestName::NftTransfer,
-        "create_token",
+        CREATE_TOKEN,
         network_name,
         run_id,
     )?;
@@ -99,13 +108,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::token_address,
-            "check_token_address",
+            CHECK_TOKEN_METADATA,
             check_token_metadata,
             &token_client,
             account.address()
         ),
         TestName::NftTransfer,
-        "check_token_metadata",
+        CHECK_TOKEN_METADATA,
         network_name,
         run_id,
     )?;
@@ -120,7 +129,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
             receiver.address()
         ),
         TestName::NftTransfer,
-        "offer_token",
+        OFFER_TOKEN,
         network_name,
         run_id,
     )?;
@@ -129,13 +138,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::token_address,
-            "check_sender_balance",
+            CHECK_SENDER_BALANCE,
             check_sender_balance,
             &token_client,
             account.address()
         ),
         TestName::NftTransfer,
-        "check_sender_balance",
+        CHECK_SENDER_BALANCE,
         network_name,
         run_id,
     )?;
@@ -150,7 +159,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
             account.address()
         ),
         TestName::NftTransfer,
-        "claim_token",
+        CLAIM_TOKEN,
         network_name,
         run_id,
     )?;
@@ -159,14 +168,14 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::token_address_address,
-            "check_receiver_balance",
+            CHECK_RECEIVER_BALANCE,
             check_receiver_balance,
             &token_client,
             receiver.address(),
             account.address()
         ),
         TestName::NftTransfer,
-        "check_receiver_balance",
+        CHECK_RECEIVER_BALANCE,
         network_name,
         run_id,
     )?;

@@ -10,7 +10,7 @@ use crate::{
     persistent_check, time_fn,
     utils::{
         check_balance, create_account, create_and_fund_account, emit_step_metrics, get_client,
-        get_faucet_client, NetworkName, TestFailure, TestName,
+        get_faucet_client, NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
     },
 };
 use anyhow::{anyhow, Result};
@@ -20,7 +20,13 @@ use aptos_rest_client::Client;
 use aptos_sdk::{coin_client::CoinClient, types::LocalAccount};
 use aptos_types::account_address::AccountAddress;
 
-static TRANSFER_AMOUNT: u64 = 1_000;
+// variables
+const TRANSFER_AMOUNT: u64 = 1_000;
+
+// step names
+const TRANSFER_COINS: &str = "TRANSFER_COINS";
+const CHECK_ACCOUNT_BALANCE: &str = "CHECK_ACCOUNT_BALANCE";
+const CHECK_ACCOUNT_BALANCE_AT_VERSION: &str = "CHECK_ACCOUNT_BALANCE_AT_VERSION";
 
 /// Tests coin transfer. Checks that:
 ///   - receiver balance reflects transferred amount
@@ -30,7 +36,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     let (client, mut account, receiver) = emit_step_metrics(
         time_fn!(setup, network_name),
         TestName::CoinTransfer,
-        "setup",
+        SETUP,
         network_name,
         run_id,
     )?;
@@ -40,14 +46,14 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address_address,
-            "check_account_data",
+            CHECK_ACCOUNT_DATA,
             check_account_data,
             &client,
             account.address(),
             receiver
         ),
         TestName::CoinTransfer,
-        "check_account_data",
+        CHECK_ACCOUNT_DATA,
         network_name,
         run_id,
     )?;
@@ -62,7 +68,7 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
             receiver
         ),
         TestName::CoinTransfer,
-        "transfer_coins",
+        TRANSFER_COINS,
         network_name,
         run_id,
     )?;
@@ -71,13 +77,13 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address,
-            "check_account_balance",
+            CHECK_ACCOUNT_BALANCE,
             check_account_balance,
             &client,
             receiver
         ),
         TestName::CoinTransfer,
-        "check_account_balance",
+        CHECK_ACCOUNT_BALANCE,
         network_name,
         run_id,
     )?;
@@ -86,14 +92,14 @@ pub async fn test(network_name: NetworkName, run_id: &str) -> Result<(), TestFai
     emit_step_metrics(
         time_fn!(
             persistent_check::address_version,
-            "check_account_balance_at_version",
+            CHECK_ACCOUNT_BALANCE_AT_VERSION,
             check_account_balance_at_version,
             &client,
             receiver,
             version
         ),
         TestName::CoinTransfer,
-        "check_account_balance_at_version",
+        CHECK_ACCOUNT_BALANCE_AT_VERSION,
         network_name,
         run_id,
     )?;

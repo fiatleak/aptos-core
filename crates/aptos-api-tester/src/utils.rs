@@ -90,6 +90,9 @@ impl ToString for NetworkName {
 
 // setup helpers
 
+pub const SETUP: &str = "SETUP";
+pub const CHECK_ACCOUNT_DATA: &str = "CHECK_ACCOUNT_DATA";
+
 /// Create a REST client.
 pub fn get_client(network_name: NetworkName) -> Client {
     match network_name {
