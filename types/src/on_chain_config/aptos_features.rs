@@ -70,6 +70,10 @@ impl Features {
     pub fn is_storage_slot_metadata_enabled(&self) -> bool {
         self.is_enabled(FeatureFlag::STORAGE_SLOT_METADATA)
     }
+
+    pub fn is_storage_deletion_refund_enabled(&self) -> bool {
+        self.is_enabled(FeatureFlag::STORAGE_DELETION_REFUND)
+    }
 }
 
 // --------------------------------------------------------------------------------------------
