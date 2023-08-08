@@ -15,7 +15,6 @@ const DEFAULT_BOOGIE_FLAGS: &[&str] = &[
     "-printVerifiedProceduresCount:0",
     "-printModel:1",
     "-enhancedErrorMessages:1",
-    "-monomorphize",
     "-proverOpt:O:model_validate=true",
 ];
 
@@ -93,7 +92,7 @@ pub struct BoogieOptions {
     /// List of flags to pass on to boogie.
     pub boogie_flags: Vec<String>,
     /// Whether to use native array theory.
-    pub use_array_theory: bool,
+    pub use_smt_array_theory: bool,
     /// Whether to produce an SMT file for each verification problem.
     pub generate_smt: bool,
     /// Whether native instead of stratified equality should be used.
@@ -160,7 +159,7 @@ impl Default for BoogieOptions {
             cvc5_exe: read_env_var("CVC5_EXE"),
             boogie_flags: vec![],
             debug_trace: false,
-            use_array_theory: false,
+            use_smt_array_theory: false,
             generate_smt: false,
             native_equality: false,
             type_requires: "free requires".to_owned(),
@@ -195,7 +194,7 @@ impl BoogieOptions {
         use VectorTheory::*;
         self.native_equality = self.vector_theory.is_extensional();
         if matches!(self.vector_theory, SmtArray | SmtArrayExt) {
-            self.use_array_theory = true;
+            self.use_smt_array_theory = true;
         }
     }
 
@@ -223,12 +222,12 @@ impl BoogieOptions {
         } else {
             add(&[&format!("-proverOpt:PROVER_PATH={}", &self.z3_exe)]);
         }
-        if self.use_array_theory {
-            add(&["-useArrayTheory"]);
+        if self.use_smt_array_theory {
             if matches!(self.vector_theory, VectorTheory::SmtArray) {
                 add(&["/proverOpt:O:smt.array.extensional=false"])
             }
         } else {
+            add(&["-useArrayAxioms"]);
             add(&[&format!(
                 "-proverOpt:O:smt.QI.EAGER_THRESHOLD={}",
                 self.eager_threshold
