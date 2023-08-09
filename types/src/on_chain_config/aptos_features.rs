@@ -32,6 +32,7 @@ pub enum FeatureFlag {
     GAS_PAYER_ENABLED = 22,
     APTOS_UNIQUE_IDENTIFIERS = 23,
     BULLETPROOFS_NATIVES = 24,
+    MODULE_EVENT = 25,
 }
 
 /// Representation of features on chain as a bitset.
@@ -68,6 +69,10 @@ impl Features {
 
     pub fn is_storage_slot_metadata_enabled(&self) -> bool {
         self.is_enabled(FeatureFlag::STORAGE_SLOT_METADATA)
+    }
+
+    pub fn is_module_event_enabled(&self) -> bool {
+        self.is_enabled(FeatureFlag::MODULE_EVENT)
     }
 }
 
