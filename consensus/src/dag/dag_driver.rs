@@ -11,7 +11,7 @@ use super::{
 use crate::{
     dag::{
         dag_store::Dag,
-        types::{CertificateAckState, CertifiedNode, Node, NodeCertificate, SignatureBuilder},
+        types::{CertificateAckState, CertifiedNode, Node, NodeCertificate, SignatureBuilder}, dag_fetcher::TFetchRequester,
     },
     state_replication::PayloadClient,
 };

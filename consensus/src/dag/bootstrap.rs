@@ -88,10 +88,10 @@ pub fn bootstrap_dag(
         time_service,
         storage.clone(),
         order_rule,
-        fetch_requester,
+        fetch_requester.clone(),
     );
     let rb_handler =
-        NodeBroadcastHandler::new(dag.clone(), signer, epoch_state.clone(), storage.clone());
+        NodeBroadcastHandler::new(dag.clone(), signer, epoch_state.clone(), storage.clone(), fetch_requester);
     let fetch_handler = FetchRequestHandler::new(dag, epoch_state.clone());
 
     let dag_handler = NetworkHandler::new(

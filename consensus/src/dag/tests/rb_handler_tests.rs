@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::dag::{
+    dag_fetcher::TFetchRequester,
     dag_store::Dag,
     rb_handler::{NodeBroadcastHandleError, NodeBroadcastHandler},
     storage::DAGStorage,
@@ -16,6 +17,18 @@ use aptos_types::{
 };
 use claims::{assert_ok, assert_ok_eq};
 use std::{collections::BTreeMap, sync::Arc};
+
+struct MockFetchRequester {}
+
+impl TFetchRequester for MockFetchRequester {
+    fn request_for_node(&self, node: crate::dag::Node) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    fn request_for_certified_node(&self, node: crate::dag::CertifiedNode) -> anyhow::Result<()> {
+        Ok(())
+    }
+}
 
 #[tokio::test]
 async fn test_node_broadcast_receiver_succeed() {
@@ -32,7 +45,13 @@ async fn test_node_broadcast_receiver_succeed() {
 
     assert_ne!(wellformed_node.digest(), equivocating_node.digest());
 
-    let mut rb_receiver = NodeBroadcastHandler::new(dag, signers[3].clone(), epoch_state, storage);
+    let mut rb_receiver = NodeBroadcastHandler::new(
+        dag,
+        signers[3].clone(),
+        epoch_state,
+        storage,
+        Arc::new(MockFetchRequester {}),
+    );
 
     let expected_result = Vote::new(
         wellformed_node.metadata().clone(),
@@ -58,7 +77,13 @@ async fn test_node_broadcast_receiver_failure() {
             let storage = Arc::new(MockStorage::new());
             let dag = Arc::new(RwLock::new(Dag::new(epoch_state.clone(), storage.clone())));
 
-            NodeBroadcastHandler::new(dag, signer.clone(), epoch_state.clone(), storage)
+            NodeBroadcastHandler::new(
+                dag,
+                signer.clone(),
+                epoch_state.clone(),
+                storage,
+                Arc::new(MockFetchRequester {}),
+            )
         })
         .collect();
 
@@ -130,6 +155,7 @@ fn test_node_broadcast_receiver_storage() {
         signers[3].clone(),
         epoch_state.clone(),
         storage.clone(),
+        Arc::new(MockFetchRequester {}),
     );
     let sig = rb_receiver.process(node).expect("must succeed");
 
@@ -138,8 +164,13 @@ fn test_node_broadcast_receiver_storage() {
         sig
     )],);
 
-    let mut rb_receiver =
-        NodeBroadcastHandler::new(dag, signers[3].clone(), epoch_state, storage.clone());
+    let mut rb_receiver = NodeBroadcastHandler::new(
+        dag,
+        signers[3].clone(),
+        epoch_state,
+        storage.clone(),
+        Arc::new(MockFetchRequester {}),
+    );
     assert_ok!(rb_receiver.gc_before_round(2));
     assert_eq!(storage.get_votes().unwrap().len(), 0);
 }
