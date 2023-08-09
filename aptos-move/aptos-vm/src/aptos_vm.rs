@@ -354,8 +354,13 @@ impl AptosVM {
         change_set_configs: &ChangeSetConfigs,
     ) -> Result<(VMStatus, VMOutput), VMStatus> {
         respawned_session.execute(|session| {
-            self.0
-                .run_success_epilogue(session, gas_meter.balance(), txn_data, log_context)
+            self.0.run_success_epilogue(
+                session,
+                gas_meter.balance(),
+                gas_meter.storage_fee_refunded(),
+                txn_data,
+                log_context,
+            )
         })?;
         let change_set = respawned_session.finish(change_set_configs)?;
         let fee_statement = AptosVM::fee_statement_from_gas_meter(txn_data, gas_meter);

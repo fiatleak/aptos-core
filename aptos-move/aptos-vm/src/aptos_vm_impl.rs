@@ -12,7 +12,7 @@ use crate::{
     transaction_validation::APTOS_TRANSACTION_VALIDATION,
 };
 use aptos_framework::RuntimeModuleMetadataV1;
-use aptos_gas_algebra::{Gas, GasExpression};
+use aptos_gas_algebra::{Fee, Gas, GasExpression};
 use aptos_gas_schedule::{
     AptosGasParameters, FromOnChainGasSchedule, MiscGasParameters, NativeGasParameters,
 };
@@ -504,12 +504,11 @@ impl AptosVMImpl {
         &self,
         session: &mut SessionExt,
         gas_remaining: Gas,
+        fee_refund: Fee,
         txn_data: &TransactionMetadata,
     ) -> VMResult<()> {
         let txn_gas_price = txn_data.gas_unit_price();
         let txn_max_gas_units = txn_data.max_gas_amount();
-        // TODO(aldenhu): repurpose this to be the amount of the storage fee refund.
-        let unused = 0;
 
         // We can unconditionally do this as this condition can only be true if the prologue
         // accepted it, in which case the gas payer feature is enabled.
@@ -521,7 +520,7 @@ impl AptosVMImpl {
                 serialize_values(&vec![
                     MoveValue::Signer(txn_data.sender),
                     MoveValue::Address(fee_payer),
-                    MoveValue::U64(unused),
+                    MoveValue::U64(fee_refund.into()),
                     MoveValue::U64(txn_gas_price.into()),
                     MoveValue::U64(txn_max_gas_units.into()),
                     MoveValue::U64(gas_remaining.into()),
@@ -536,7 +535,7 @@ impl AptosVMImpl {
                 vec![],
                 serialize_values(&vec![
                     MoveValue::Signer(txn_data.sender),
-                    MoveValue::U64(unused),
+                    MoveValue::U64(fee_refund.into()),
                     MoveValue::U64(txn_gas_price.into()),
                     MoveValue::U64(txn_max_gas_units.into()),
                     MoveValue::U64(gas_remaining.into()),
@@ -554,6 +553,7 @@ impl AptosVMImpl {
         &self,
         session: &mut SessionExt,
         gas_remaining: Gas,
+        fee_refund: Fee,
         txn_data: &TransactionMetadata,
         log_context: &AdapterLogSchema,
     ) -> Result<(), VMStatus> {
@@ -564,7 +564,7 @@ impl AptosVMImpl {
             ))
         });
 
-        self.run_epiloque(session, gas_remaining, txn_data)
+        self.run_epiloque(session, gas_remaining, fee_refund, txn_data)
             .or_else(|err| convert_epilogue_error(err, log_context))
     }
 
@@ -577,7 +577,7 @@ impl AptosVMImpl {
         txn_data: &TransactionMetadata,
         log_context: &AdapterLogSchema,
     ) -> Result<(), VMStatus> {
-        self.run_epiloque(session, gas_remaining, txn_data)
+        self.run_epiloque(session, gas_remaining, Fee::new(0), txn_data)
             .or_else(|e| {
                 expect_only_successful_execution(
                     e,
