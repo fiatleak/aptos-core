@@ -2,20 +2,23 @@
 
 use crate::{
     consts::FUND_AMOUNT,
-    fail_message::{
+    persistent_check,
+    strings::{
+        CHECK_ACCOUNT_DATA, CHECK_COLLECTION_METADATA, CHECK_RECEIVER_BALANCE,
+        CHECK_SENDER_BALANCE, CHECK_TOKEN_METADATA, CLAIM_TOKEN, CREATE_COLLECTION, CREATE_TOKEN,
         ERROR_COULD_NOT_CREATE_TRANSACTION, ERROR_COULD_NOT_FINISH_TRANSACTION,
         ERROR_COULD_NOT_FUND_ACCOUNT, ERROR_NO_COLLECTION_DATA, ERROR_NO_TOKEN_BALANCE,
         ERROR_NO_TOKEN_DATA, FAIL_WRONG_COLLECTION_DATA, FAIL_WRONG_TOKEN_BALANCE,
-        FAIL_WRONG_TOKEN_DATA,
+        FAIL_WRONG_TOKEN_DATA, OFFER_TOKEN, SETUP,
     },
-    persistent_check, time_fn,
+    time_fn,
     token_client::{
         CollectionData, CollectionMutabilityConfig, RoyaltyOptions, TokenClient, TokenData,
         TokenMutabilityConfig,
     },
     utils::{
         check_balance, create_and_fund_account, emit_step_metrics, get_client, get_faucet_client,
-        NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
+        NetworkName, TestFailure, TestName,
     },
 };
 use aptos_api_types::U64;
@@ -24,21 +27,10 @@ use aptos_rest_client::Client;
 use aptos_sdk::types::LocalAccount;
 use aptos_types::account_address::AccountAddress;
 
-// variables
 const COLLECTION_NAME: &str = "test collection";
 const TOKEN_NAME: &str = "test token";
 const TOKEN_SUPPLY: u64 = 10;
 const OFFER_AMOUNT: u64 = 2;
-
-// step names
-const CREATE_COLLECTION: &str = "CREATE_COLLECTION";
-const CHECK_COLLECTION_METADATA: &str = "CHECK_COLLECTION_METADATA";
-const CREATE_TOKEN: &str = "CREATE_TOKEN";
-const CHECK_TOKEN_METADATA: &str = "CHECK_TOKEN_METADATA";
-const CHECK_SENDER_BALANCE: &str = "CHECK_SENDER_BALANCE";
-const OFFER_TOKEN: &str = "OFFER_TOKEN";
-const CLAIM_TOKEN: &str = "CLAIM_TOKEN";
-const CHECK_RECEIVER_BALANCE: &str = "CHECK_RECEIVER_BALANCE";
 
 /// Tests nft transfer. Checks that:
 ///   - collection data exists

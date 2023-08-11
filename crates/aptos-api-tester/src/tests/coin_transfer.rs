@@ -2,15 +2,17 @@
 
 use crate::{
     consts::FUND_AMOUNT,
-    fail_message::{
+    persistent_check,
+    strings::{
+        CHECK_ACCOUNT_BALANCE, CHECK_ACCOUNT_BALANCE_AT_VERSION, CHECK_ACCOUNT_DATA,
         ERROR_COULD_NOT_CREATE_ACCOUNT, ERROR_COULD_NOT_CREATE_TRANSACTION,
         ERROR_COULD_NOT_FINISH_TRANSACTION, ERROR_COULD_NOT_FUND_ACCOUNT, ERROR_NO_BALANCE,
-        ERROR_NO_VERSION, FAIL_WRONG_BALANCE, FAIL_WRONG_BALANCE_AT_VERSION,
+        ERROR_NO_VERSION, FAIL_WRONG_BALANCE, FAIL_WRONG_BALANCE_AT_VERSION, SETUP, TRANSFER_COINS,
     },
-    persistent_check, time_fn,
+    time_fn,
     utils::{
         check_balance, create_account, create_and_fund_account, emit_step_metrics, get_client,
-        get_faucet_client, NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
+        get_faucet_client, NetworkName, TestFailure, TestName,
     },
 };
 use anyhow::{anyhow, Result};
@@ -20,13 +22,7 @@ use aptos_rest_client::Client;
 use aptos_sdk::{coin_client::CoinClient, types::LocalAccount};
 use aptos_types::account_address::AccountAddress;
 
-// variables
 const TRANSFER_AMOUNT: u64 = 1_000;
-
-// step names
-const TRANSFER_COINS: &str = "TRANSFER_COINS";
-const CHECK_ACCOUNT_BALANCE: &str = "CHECK_ACCOUNT_BALANCE";
-const CHECK_ACCOUNT_BALANCE_AT_VERSION: &str = "CHECK_ACCOUNT_BALANCE_AT_VERSION";
 
 /// Tests coin transfer. Checks that:
 ///   - receiver balance reflects transferred amount

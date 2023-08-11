@@ -2,17 +2,19 @@
 
 use crate::{
     consts::FUND_AMOUNT,
-    fail_message::{
+    persistent_check,
+    strings::{
+        BUILD_MODULE, CHECK_ACCOUNT_DATA, CHECK_MESSAGE, CHECK_MODULE_DATA,
         ERROR_COULD_NOT_BUILD_PACKAGE, ERROR_COULD_NOT_CREATE_TRANSACTION,
         ERROR_COULD_NOT_FINISH_TRANSACTION, ERROR_COULD_NOT_FUND_ACCOUNT,
         ERROR_COULD_NOT_SERIALIZE, ERROR_NO_BYTECODE, ERROR_NO_MESSAGE, ERROR_NO_METADATA,
-        ERROR_NO_MODULE, FAIL_WRONG_MESSAGE, FAIL_WRONG_MODULE,
+        ERROR_NO_MODULE, FAIL_WRONG_MESSAGE, FAIL_WRONG_MODULE, PUBLISH_MODULE, SETUP, SET_MESSAGE,
     },
-    persistent_check, time_fn,
+    time_fn,
     token_client::{build_and_submit_transaction, TransactionOptions},
     utils::{
         check_balance, create_and_fund_account, emit_step_metrics, get_client, get_faucet_client,
-        NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
+        NetworkName, TestFailure, TestName,
     },
 };
 use anyhow::{anyhow, Result};
@@ -29,16 +31,8 @@ use aptos_types::{
 use move_core_types::{ident_str, language_storage::ModuleId};
 use std::{collections::BTreeMap, path::PathBuf};
 
-// variables
 static MODULE_NAME: &str = "message";
 static MESSAGE: &str = "test message";
-
-// step names
-const BUILD_MODULE: &str = "BUILD_MODULE";
-const PUBLISH_MODULE: &str = "PUBLISH_MODULE";
-const CHECK_MODULE_DATA: &str = "CHECK_MODULE_DATA";
-const SET_MESSAGE: &str = "SET_MESSAGE";
-const CHECK_MESSAGE: &str = "CHECK_MESSAGE";
 
 /// Tests nft transfer. Checks that:
 ///   - can publish module

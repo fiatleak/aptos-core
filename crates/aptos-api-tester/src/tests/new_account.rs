@@ -2,14 +2,15 @@
 
 use crate::{
     consts::FUND_AMOUNT,
-    fail_message::{
-        ERROR_COULD_NOT_CREATE_ACCOUNT, ERROR_COULD_NOT_FUND_ACCOUNT, ERROR_NO_ACCOUNT_DATA,
-        FAIL_WRONG_ACCOUNT_DATA,
+    persistent_check,
+    strings::{
+        CHECK_ACCOUNT_BALANCE, CHECK_ACCOUNT_DATA, ERROR_COULD_NOT_CREATE_ACCOUNT,
+        ERROR_COULD_NOT_FUND_ACCOUNT, ERROR_NO_ACCOUNT_DATA, FAIL_WRONG_ACCOUNT_DATA, FUND, SETUP,
     },
-    persistent_check, time_fn,
+    time_fn,
     utils::{
         check_balance, create_account, emit_step_metrics, get_client, get_faucet_client,
-        NetworkName, TestFailure, TestName, CHECK_ACCOUNT_DATA, SETUP,
+        NetworkName, TestFailure, TestName,
     },
 };
 use aptos_api_types::U64;
@@ -17,10 +18,6 @@ use aptos_logger::info;
 use aptos_rest_client::{Account, Client, FaucetClient};
 use aptos_sdk::types::LocalAccount;
 use aptos_types::account_address::AccountAddress;
-
-// Step names
-const FUND: &str = "FUND";
-const CHECK_ACCOUNT_BALANCE: &str = "CHECK_ACCOUNT_BALANCE";
 
 /// Tests new account creation. Checks that:
 ///   - account data exists

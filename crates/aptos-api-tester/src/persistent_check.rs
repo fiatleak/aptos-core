@@ -2,7 +2,7 @@
 
 use crate::{
     consts::{PERSISTENCY_TIMEOUT, SLEEP_PER_CYCLE},
-    fail_message::ERROR_COULD_NOT_CHECK,
+    strings::ERROR_COULD_NOT_CHECK,
     token_client::TokenClient,
     utils::TestFailure,
 };

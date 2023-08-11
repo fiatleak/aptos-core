@@ -5,8 +5,8 @@
 
 mod consts;
 mod counters;
-mod fail_message;
 mod persistent_check;
+mod strings;
 mod tests;
 mod token_client;
 mod utils;

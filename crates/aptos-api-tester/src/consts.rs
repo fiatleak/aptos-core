@@ -4,7 +4,7 @@ use once_cell::sync::Lazy;
 use std::{env, time::Duration};
 use url::Url;
 
-// faucet constants
+// Faucet constants
 
 pub static DEVNET_NODE_URL: Lazy<Url> =
     Lazy::new(|| Url::parse("https://fullnode.devnet.aptoslabs.com").unwrap());
@@ -20,7 +20,7 @@ pub static TESTNET_FAUCET_URL: Lazy<Url> =
 
 pub const FUND_AMOUNT: u64 = 100_000_000;
 
-// persistency check constants
+// Persistency check constants
 
 // How long a persistent check runs for.
 pub static PERSISTENCY_TIMEOUT: Lazy<Duration> = Lazy::new(|| {
@@ -40,7 +40,7 @@ pub static SLEEP_PER_CYCLE: Lazy<Duration> = Lazy::new(|| {
         .unwrap_or(Duration::from_millis(100))
 });
 
-// runtime constants
+// Runtime constants
 
 pub static NUM_THREADS: Lazy<usize> = Lazy::new(|| {
     env::var("NUM_THREADS")

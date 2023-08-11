@@ -5,7 +5,7 @@ use crate::{
         DEVNET_FAUCET_URL, DEVNET_NODE_URL, FUND_AMOUNT, TESTNET_FAUCET_URL, TESTNET_NODE_URL,
     },
     counters::{test_error, test_fail, test_latency, test_step_latency, test_success},
-    fail_message::{ERROR_NO_BALANCE, FAIL_WRONG_BALANCE},
+    strings::{ERROR_NO_BALANCE, FAIL_WRONG_BALANCE},
     tests::{coin_transfer, new_account, nft_transfer, publish_module},
     time_fn,
 };
@@ -17,7 +17,7 @@ use aptos_sdk::types::LocalAccount;
 use aptos_types::account_address::AccountAddress;
 use std::env;
 
-// test failure
+// Test failure
 
 #[derive(Debug)]
 pub enum TestFailure {
@@ -37,7 +37,7 @@ impl From<anyhow::Error> for TestFailure {
     }
 }
 
-// test name
+// Test name
 
 #[derive(Clone, Copy)]
 pub enum TestName {
@@ -71,7 +71,7 @@ impl ToString for TestName {
     }
 }
 
-// network name
+// Network name
 
 #[derive(Clone, Copy)]
 pub enum NetworkName {
@@ -88,10 +88,7 @@ impl ToString for NetworkName {
     }
 }
 
-// setup helpers
-
-pub const SETUP: &str = "SETUP";
-pub const CHECK_ACCOUNT_DATA: &str = "CHECK_ACCOUNT_DATA";
+// Setup helpers
 
 /// Create a REST client.
 pub fn get_client(network_name: NetworkName) -> Client {
@@ -170,7 +167,7 @@ pub async fn check_balance(
     Ok(())
 }
 
-// metrics helpers
+// Metrics helpers
 
 /// Emit metrics based on test result.
 pub fn emit_test_metrics(
