@@ -66,6 +66,8 @@ return true.
 -  [Function `auids_enabled`](#0x1_features_auids_enabled)
 -  [Function `get_bulletproofs_feature`](#0x1_features_get_bulletproofs_feature)
 -  [Function `bulletproofs_enabled`](#0x1_features_bulletproofs_enabled)
+-  [Function `get_aptos_stdlib_patch_feature`](#0x1_features_get_aptos_stdlib_patch_feature)
+-  [Function `aptos_stdlib_patch_enabled`](#0x1_features_aptos_stdlib_patch_enabled)
 -  [Function `change_feature_flags`](#0x1_features_change_feature_flags)
 -  [Function `is_enabled`](#0x1_features_is_enabled)
 -  [Function `set`](#0x1_features_set)
@@ -117,6 +119,18 @@ The enabled features, represented by a bitset stored on chain.
 <a name="@Constants_0"></a>
 
 ## Constants
+
+
+<a name="0x1_features_APTOS_STDLIB_PATCH"></a>
+
+Whether the aptos_stdlib patch is enabled. The patch is deprecating the private functions
+that are supposed to be test-only, and fixing the signer formatter.
+Lifetime: transient
+
+
+<pre><code><b>const</b> <a href="features.md#0x1_features_APTOS_STDLIB_PATCH">APTOS_STDLIB_PATCH</a>: u64 = 25;
+</code></pre>
+
 
 
 <a name="0x1_features_APTOS_STD_CHAIN_ID_NATIVES"></a>
@@ -1181,6 +1195,52 @@ Lifetime: transient
 
 <pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_bulletproofs_enabled">bulletproofs_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
     <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_BULLETPROOFS_NATIVES">BULLETPROOFS_NATIVES</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_features_get_aptos_stdlib_patch_feature"></a>
+
+## Function `get_aptos_stdlib_patch_feature`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_aptos_stdlib_patch_feature">get_aptos_stdlib_patch_feature</a>(): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_aptos_stdlib_patch_feature">get_aptos_stdlib_patch_feature</a>(): u64 { <a href="features.md#0x1_features_APTOS_STDLIB_PATCH">APTOS_STDLIB_PATCH</a> }
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_features_aptos_stdlib_patch_enabled"></a>
+
+## Function `aptos_stdlib_patch_enabled`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_aptos_stdlib_patch_enabled">aptos_stdlib_patch_enabled</a>(): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_aptos_stdlib_patch_enabled">aptos_stdlib_patch_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+    <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_APTOS_STDLIB_PATCH">APTOS_STDLIB_PATCH</a>)
 }
 </code></pre>
 

@@ -220,6 +220,18 @@ module std::features {
         is_enabled(BULLETPROOFS_NATIVES)
     }
 
+    /// Whether the aptos_stdlib patch is enabled. The patch is deprecating the private functions
+    /// that are supposed to be test-only, and fixing the signer formatter.
+    /// Lifetime: transient
+
+    const APTOS_STDLIB_PATCH: u64 = 25;
+
+    public fun get_aptos_stdlib_patch_feature(): u64 { APTOS_STDLIB_PATCH }
+
+    public fun aptos_stdlib_patch_enabled(): bool acquires Features {
+        is_enabled(APTOS_STDLIB_PATCH)
+    }
+
     // ============================================================================================
     // Feature Flag Implementation
 
