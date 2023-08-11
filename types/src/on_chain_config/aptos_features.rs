@@ -32,6 +32,7 @@ pub enum FeatureFlag {
     GAS_PAYER_ENABLED = 22,
     APTOS_UNIQUE_IDENTIFIERS = 23,
     BULLETPROOFS_NATIVES = 24,
+    STORAGE_DELETION_REFUND = 25,
 }
 
 /// Representation of features on chain as a bitset.
