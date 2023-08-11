@@ -19,10 +19,13 @@
 !**/*.mrb
 !**/*.errmap
 !config/src/config/test_data
-!aptos-move/
 !aptos-move/aptos-release-builder/data/release.yaml
 !aptos-move/aptos-release-builder/data/proposals/*
 !aptos-move/framework/
+!aptos-move/framework/aptos-framework/
+!aptos-move/framework/aptos-stdlib/
+!aptos-move/framework/move-stdlib/
+!aptos-move/move-examples/hello_blockchain/
 !crates/aptos/src/move_tool/*.bpl
 !crates/aptos-faucet/doc/
 !api/doc/
